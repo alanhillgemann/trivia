@@ -45,7 +45,7 @@ def create_app(test_config=None):
 
     # Handle GET requests for categories
     @app.route('/categories')
-    def categories():
+    def get_categories():
         categories = Category.query.all()
         if len(categories) > 0:
             return jsonify({
@@ -127,14 +127,20 @@ def create_app(test_config=None):
             })
 
 
-    '''
-    @TODO:
-    Create a GET endpoint to get questions based on category.
-
-    TEST: In the "List" tab / main screen, clicking on one of the
-    categories in the left column will cause only questions of that
-    category to be shown.
-    '''
+    # Handle GET requests for questions by category ID
+    @app.route('/categories/<int:category_id>/questions')
+    def get_questions_by_category(category_id):
+        questions = Question.query.filter(Question.category == category_id).all()
+        page_questions = paginate_questions(request, questions)
+        if len(page_questions) > 0:
+            return jsonify({
+                'success': True,
+                'current_category': category_id,
+                'questions': page_questions,
+                'total_questions': len(questions)
+            })
+        else:
+            abort(404)
 
 
     '''
@@ -148,7 +154,6 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     '''
-
 
     # Handle errors
     @app.errorhandler(400)
@@ -181,6 +186,6 @@ def create_app(test_config=None):
             'success': False,
             'error': 500,
             'message': 'Internal Server Error'
-        }), 422
+        }), 500
 
     return app
