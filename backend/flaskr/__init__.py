@@ -19,6 +19,14 @@ def paginate_questions(request, questions):
     return page_questions
 
 
+# Return categories object as dict
+def categories_as_dict(categories):
+    categories_as_dict = {}
+    for category in categories:
+        categories_as_dict[category.id] = category.type
+    return categories_as_dict
+
+
 def create_app(test_config=None):
     # Create and configure the app
     app = Flask(__name__)
@@ -48,7 +56,7 @@ def create_app(test_config=None):
             abort(404)
 
 
-    # Handle GET requests for questions.
+    # Handle GET requests for questions
     @app.route('/questions')
     def get_questions():
         questions = Question.query.all()
