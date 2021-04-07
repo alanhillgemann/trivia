@@ -9,13 +9,12 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 
-# Return list of question objects as pagated list of dicts
+# Return list of question objects as paginated list of dicts
 def paginate_questions(request, questions):
     page = request.args.get('page', 1, type=int)
     start =  (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
-    formatted_questions = [question.format() for question in questions]
-    page_questions = formatted_questions[start:end]
+    page_questions = [question.format() for question in questions[start:end]]
     return page_questions
 
 
@@ -143,17 +142,27 @@ def create_app(test_config=None):
             abort(404)
 
 
-    '''
-    @TODO:
-    Create a POST endpoint to get questions to play the quiz.
-    This endpoint should take category and previous question parameters
-    and return a random questions within the given category,
-    if provided, and that is not one of the previous questions.
+    # Handle POST requests for quizzes
+    @app.route('/quizzes', methods=['POST'])
+    def get_quizzes():
+        body = request.get_json()
+        previous_questions = body.get('previous_questions')
+        category_id = body.get('quiz_category')['id']
+        if category_id == "0":
+            questions = Question.query.all()
+        elif Category.query.get(category_id) is not None:
+            questions = Question.query.filter(Question.category == category_id).all()
+        else:
+            abort(422)
+        remaining_questions = [question for question in questions if question.id not in previous_questions]
+        random_question = None
+        if len(remaining_questions) > 0:
+            random_question = random.choice(remaining_questions).format()
+        return jsonify({
+            'success': True,
+            'question': random_question
+        })
 
-    TEST: In the "Play" tab, after a user selects "All" or a category,
-    one question at a time is displayed, the user is allowed to answer
-    and shown whether they were correct or not.
-    '''
 
     # Handle errors
     @app.errorhandler(400)
