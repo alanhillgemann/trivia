@@ -9,14 +9,14 @@ from models import setup_db, Question, Category
 QUESTIONS_PER_PAGE = 10
 
 def create_app(test_config=None):
-    # create and configure the app
+    # Create and configure the app
     app = Flask(__name__)
     setup_db(app)
 
-    # set CORS
+    # Set CORS.
     CORS(app, resources={'/': {'origins': '*'}})
 
-    # set Access-Control-Allow
+    # Set Access-Control-Allow
     @app.after_request
     def after_request(response):
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
@@ -37,18 +37,22 @@ def create_app(test_config=None):
             abort(404)
 
 
-    '''
-    @TODO:
-    Create an endpoint to handle GET requests for questions,
-    including pagination (every 10 questions).
-    This endpoint should return a list of questions,
-    number of total questions, current category, categories.
+    # Handle GET requests for questions.
+    @app.route('/questions')
+    def get_questions():
+        questions = Question.query.all()
+        page_questions = paginate_questions(request, questions)
+        if len(page_questions) > 0:
+            categories = Category.query.all()
+            return jsonify({
+                'success': True,
+                'categories': categories_as_dict(categories),
+                'questions': page_questions,
+                'total_questions': len(questions)
+            })
+        else:
+            abort(404)
 
-    TEST: At this point, when you start the application
-    you should see questions and categories generated,
-    ten questions per page and pagination at the bottom of the screen for three pages.
-    Clicking on the page numbers should update the questions.
-    '''
 
     '''
     @TODO:
