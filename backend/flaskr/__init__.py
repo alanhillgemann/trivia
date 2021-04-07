@@ -91,38 +91,41 @@ def create_app(test_config=None):
     @app.route('/questions', methods=['POST'])
     def post_question():
         body = request.get_json()
-        question = Question(
-            question = body.get('question'),
-            answer = body.get('answer'),
-            difficulty = body.get('difficulty'),
-            category = body.get('category')
-        )
-        if (
-            (question.question is None) or
-            (question.answer is None) or
-            (question.difficulty is None) or
-            (question.difficulty not in [1, "1", "2", "3", "4", "5"]) or
-            (question.category is None) or
-            (Category.query.get(question.category) is None)
-        ):
-            abort(422)
-        question.insert()
-        return jsonify({
-            'success': True,
-            'created': question.id,
-        })
+        if (body.get('searchTerm')):
+            # Return questions by search term
+            search_term = body.get('searchTerm')
+            questions = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
+            page_questions = paginate_questions(request, questions)
+            if (len(page_questions) > 0):
+                return jsonify({
+                    'success': True,
+                    'questions': page_questions,
+                    'total_questions': len(questions)
+            })
+            else:
+                abort(404)
+        else:
+            question = Question(
+                question = body.get('question'),
+                answer = body.get('answer'),
+                difficulty = body.get('difficulty'),
+                category = body.get('category')
+            )
+            if (
+                (question.question is None) or
+                (question.answer is None) or
+                (question.difficulty is None) or
+                (question.difficulty not in [1, "1", "2", "3", "4", "5"]) or
+                (question.category is None) or
+                (Category.query.get(question.category) is None)
+            ):
+                abort(422)
+            question.insert()
+            return jsonify({
+                'success': True,
+                'created': question.id,
+            })
 
-
-    '''
-    @TODO:
-    Create a POST endpoint to get questions based on a search term.
-    It should return any questions for whom the search term
-    is a substring of the question.
-
-    TEST: Search by any phrase. The questions list will update to include
-    only question that include that string within their question.
-    Try using the word "title" to start.
-    '''
 
     '''
     @TODO:
