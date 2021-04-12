@@ -76,10 +76,10 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ### Error Handling
 
 - HTTP Status Codes:
--- 400 - Bad Request
--- 404 - Not Found
--- 422 - Unprocessable Entity
--- 500 - Internal Server Error
+    - 400 - Bad Request
+    - 404 - Not Found
+    - 422 - Unprocessable Entity
+    - 500 - Internal Server Error
 
 - Response Body:
 ```
@@ -93,7 +93,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ### Endpoints
 
 ### GET '/categories'
-Returns all categories
+Returns all categories.
 - Path Parameters: None
 - Request Parameters: None
 - Query String Parameters: None
@@ -114,7 +114,7 @@ Returns all categories
 ```
 
 ### GET '/categories/:category_id/questions'
-Returns all questions and total for a category
+Returns all questions and total for a category.
 - Path Parameters: ```category_id (integer)```
 - Request Parameters: None
 - Query String Parameters: None
@@ -138,8 +138,7 @@ Returns all questions and total for a category
 ```
 
 ### GET '/questions'
-Returns all categories, 10 questions per page and total
-Defaults to page 1 when query string parameter is missing
+Returns all categories, 10 questions per page and total.  Defaults to page 1 when query string parameter is missing.
 - Path Parameters: None
 - Query String Parameters: ```page (integer)```
 - Request Parameters: None
@@ -170,8 +169,7 @@ Defaults to page 1 when query string parameter is missing
 ```
 
 ### POST '/questions'
-Creates a new question and returns the ID
-Alternatively returns all questions and total for a search term
+Creates a new question and returns the ID.  Alternatively returns all questions and total for a search term.
 - Path Parameters: None
 - Query String Parameters: None
 - Request Parameters:
@@ -186,10 +184,12 @@ Alternatively returns all questions and total for a search term
 ```
 - CURL:
 ```
-    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" -d '{"answer": "answer", "category": "1", "difficulty": "1", "question": "question"}'
+    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" \
+    -d '{"answer": "answer", "category": 1, "difficulty": 1, "question": "question"}'
 
     Alternatively:
-    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" -d '{"searchTerm": "a"}'
+    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" \
+    -d '{"searchTerm": "a"}'
 ```
 - Response Body:
 ```
@@ -215,8 +215,8 @@ Alternatively returns all questions and total for a search term
 ```
 
 ### DELETE '/questions/:question_id'
-Deletes a question and returns the ID
-- Path Parameters: question_id (int)
+Deletes a question and returns the ID.
+- Path Parameters: ```question_id (int)```
 - Query String Parameters: None
 - Request Parameters: None
 - CURL: ```curl http://localhost:5000/questions/1 -X DELETE```
@@ -228,20 +228,19 @@ Deletes a question and returns the ID
     }
 ```
 
-POST '/quizzes'
-Returns a random unanswered question for one or all categories
+### POST '/quizzes'
+Returns a random unanswered question for one or all categories.
 - Path Parameters: None
 - Query String Parameters: None
 - Request Parameters:
 ```
     previous_questions (array of question_ids)
-    quiz_category (object)
+    quiz_category (object):
         id (integer, 0 = all categories)
 ```
 - CURL:
 ```
-    curl http://localhost:5000/quizzes -X POST /
-    -H "Content-Type: application/json" /
+    curl http://localhost:5000/quizzes -X POST -H "Content-Type: application/json" \
     -d '{"previous_questions": [2], "quiz_category": {"id": 1}}'
 ```
 - Response Body:
