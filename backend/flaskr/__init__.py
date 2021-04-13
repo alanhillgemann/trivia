@@ -12,10 +12,11 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
 def paginate_questions(questions):
     '''Return list of question objects as paginated list of dicts'''
     page = request.args.get('page', 1, type=int)
-    start =  (page - 1) * QUESTIONS_PER_PAGE
+    start = (page - 1) * QUESTIONS_PER_PAGE
     end = start + QUESTIONS_PER_PAGE
     page_questions = [question.format() for question in questions[start:end]]
     return page_questions
@@ -111,11 +112,11 @@ def create_app(test_config=None):
             })
         try:
             question = Question(
-                question = body.get('question'),
-                answer = body.get('answer'),
-                difficulty = int(body.get('difficulty')),
-                category = int(body.get('category'))
-        )
+                question=body.get('question'),
+                answer=body.get('answer'),
+                difficulty=int(body.get('difficulty')),
+                category=int(body.get('category'))
+            )
         except (TypeError, ValueError):
             abort(422)
         if (
@@ -165,8 +166,8 @@ def create_app(test_config=None):
                 Question.category == category_id).all()
         else:
             abort(422)
-        remaining_questions = [question for question in questions \
-            if question.id not in previous_questions]
+        remaining_questions = [question for question in questions
+                               if question.id not in previous_questions]
         random_question = None
         if len(remaining_questions) > 0:
             random_question = random.choice(remaining_questions).format()

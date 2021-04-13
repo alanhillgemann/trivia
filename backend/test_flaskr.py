@@ -142,15 +142,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Bad Request')
 
-    # type
-    # range
-    # blank
-    # missing
-
-    # search not str
-    # question not str
-    # answer not str
-
     def test_error_post_questions_question_not_valid_type(self):
         """Test error POST /questions when question not valid type"""
         new_question = {
